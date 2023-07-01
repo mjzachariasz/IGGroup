@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-import { TableCell } from ".";
+import { Skeleton, TableCell } from ".";
 import { dropdownArrow, magnifyingGlass } from "../asets";
 
 export interface FetchInterface {
@@ -16,9 +16,20 @@ export interface FetchInterface {
   _id: string;
 }
 
+interface FiltersInterface {
+  profitLoss: "all" | "profit" | "loss";
+  searchInput: string;
+}
+
 const Table = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [howManyVisible, setHowManyVisible] = useState(5);
+
   const [data, setData] = useState<FetchInterface[]>([]);
+  const [filters, setFilters] = useState<FiltersInterface>({
+    profitLoss: "all",
+    searchInput: "",
+  });
 
   const url = "https://recruitmentdb-508d.restdb.io/rest/accounts";
 
@@ -33,44 +44,57 @@ const Table = () => {
   };
 
   useEffect(() => {
-    const config = {
-      headers: {
-        "x-api-key": import.meta.env.VITE_APIKEY,
-      },
-    };
     setIsLoading(true);
+    const timer1 = setTimeout(() => {
+      const config = {
+        headers: {
+          "x-api-key": import.meta.env.VITE_APIKEY,
+        },
+      };
 
-    const getUsers = async () => {
-      try {
-        const { data } = await axios.get(url, config);
-        setData(data.sort(compare));
-        setIsLoading(false);
-      } catch (error) {
-        if (axios.isAxiosError(error)) {
-          console.log("error message: ", error.message);
+      const getUsers = async () => {
+        try {
+          const { data } = await axios.get(url, config);
+          setData(data.sort(compare));
           setIsLoading(false);
-          return error.message;
-        } else {
-          console.log("unexpected error: ", error);
-          setIsLoading(false);
-          return "An unexpected error occurred";
+        } catch (error) {
+          if (axios.isAxiosError(error)) {
+            console.log("error message: ", error.message);
+            setIsLoading(false);
+            return error.message;
+          } else {
+            console.log("unexpected error: ", error);
+            setIsLoading(false);
+            return "An unexpected error occurred";
+          }
         }
-      }
-    };
+      };
 
-    getUsers();
+      getUsers();
+    }, 5000);
+    return () => {
+      clearTimeout(timer1);
+    };
   }, []);
 
+  useEffect(() => {
+    console.log(`zmieniono na ${howManyVisible}`);
+  }, [howManyVisible]);
+
   return (
-    <div className="container mx-auto px-4 sm:px-8">
+    <div className="container mx-auto px-4 sm:px-8 h-[100vh]">
       <div className="py-8">
         <div className="my-2 flex sm:flex-row flex-col">
           <div className="flex flex-row mb-1 sm:mb-0">
             <div className="relative">
-              <select className="appearance-none h-full rounded-l border block w-full bg-white border-gray-400 text-gray-700 py-2 px-4 pr-8 leading-tight focus:outline-none focus:bg-white focus:border-gray-500">
-                <option>5</option>
-                <option>10</option>
-                <option>20</option>
+              <select
+                className="appearance-none h-full rounded-l border block w-full bg-white border-gray-400 text-gray-700 py-2 px-4 pr-8 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                value={howManyVisible}
+                onChange={(e) => setHowManyVisible(parseInt(e.target.value))}
+              >
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={20}>20</option>
               </select>
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                 <img
@@ -126,14 +150,18 @@ const Table = () => {
                 </tr>
               </thead>
               <tbody>
-                {data.map((singleRow) => (
-                  <TableCell content={singleRow} />
-                ))}
+                {isLoading
+                  ? [...Array(howManyVisible)].map((_, index) => (
+                      <Skeleton key={index} />
+                    ))
+                  : data.map((singleRow) => (
+                      <TableCell content={singleRow} key={singleRow._id} />
+                    ))}
               </tbody>
             </table>
             <div className="px-5 py-5 bg-white border-t flex flex-col xs:flex-row items-center xs:justify-between          ">
               <span className="text-xs xs:text-sm text-gray-900">
-                Showing 1 to {data.length} of {data.length} entries
+                Showing 1 to {howManyVisible} of {data.length} entries
               </span>
               <div className="inline-flex mt-2 xs:mt-0">
                 <button className="text-sm bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-l">
