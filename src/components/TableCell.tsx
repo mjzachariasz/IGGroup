@@ -7,12 +7,12 @@ interface TableCellProps {
 const TableCell = ({ content }: TableCellProps) => {
   return (
     <tr className="transition duration-300 ease-in-out bg-white hover:bg-neutral-100">
-      <td className="px-5 py-5 border-b border-gray-200 text-sm ">
+      <td colSpan={6} className="px-5 py-5 border-b border-gray-200 text-sm ">
         <div className="flex items-center">
           <p className="text-gray-900 whitespace-no-wrap">{content.name}</p>
         </div>
       </td>
-      <td className="px-5 py-5 border-b border-gray-200  text-sm">
+      <td colSpan={3} className="px-5 py-5 border-b border-gray-200  text-sm">
         <span
           className={`${
             content.profitLoss > 0 ? "text-green-900 " : "text-red-900 "
@@ -29,7 +29,7 @@ const TableCell = ({ content }: TableCellProps) => {
           </span>
         </span>
       </td>
-      <td className="px-5 py-5 border-b border-gray-200  text-sm">
+      <td colSpan={3} className="px-5 py-5 border-b border-gray-200  text-sm">
         <p className="text-gray-900 whitespace-no-wrap">
           {content.accountType}
         </p>
