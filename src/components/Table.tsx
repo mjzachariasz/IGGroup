@@ -184,6 +184,7 @@ const Table = () => {
           <div className="flex flex-row mb-1 sm:mb-0">
             <div className="relative">
               <select
+                data-testid="dropdown-posts"
                 className="appearance-none h-full rounded-l border block w-full bg-white border-gray-400 text-gray-700 py-2 px-4 pr-8 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                 value={postsPerPage}
                 onChange={(e) => setPostsPerPage(parseInt(e.target.value))}
@@ -202,6 +203,7 @@ const Table = () => {
             </div>
             <div className="relative">
               <select
+                data-testid="dropdown-profitLoss"
                 onChange={(selectedValue) =>
                   handleProfitLossFilter(
                     selectedValue.target.value as ProfitLossOptions
@@ -231,6 +233,7 @@ const Table = () => {
               />
             </span>
             <input
+              data-testid="input-searchbar"
               value={filters.searchInput}
               placeholder="Search using name"
               onChange={(event) => handleTextFilter(event.target.value)}
@@ -240,7 +243,10 @@ const Table = () => {
         </div>
         <div className="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto">
           <div className="inline-block min-w-full shadow rounded-lg overflow-hidden">
-            <table className="min-w-full leading-normal table-fixed">
+            <table
+              className="min-w-full leading-normal table-fixed"
+              data-testid="main-table"
+            >
               <thead>
                 <tr>
                   <th
